@@ -332,6 +332,7 @@ class Tpv
     /**
      * @param string $version
      * @return $this
+     * @throws TpvException if no version is set
      */
     public function setVersion($version = '')
     {
@@ -344,6 +345,21 @@ class Tpv
     }
 
     /**
+     * Set secure payment
+     *
+     * @param int $secure 1 = secure, 0 = non secure
+     * @return $this
+     * @throws TpvException if secure parameter is invalid
+     */
+    public function setSecurePayment($secure = 1) {
+        if ($this->isEmpty($secure) || ($secure != 1 && $secure != 0)) {
+            throw new TpvException('Allowed secure values are 1 for secure and 0 for not secure');
+        }
+        $this->_setParameters['DS_SECURE_PAYMENT'] = $secure;
+        return $this;
+    }
+
+    /**
      * Generate Merchant Parameters
      *
      * @return string
@@ -352,6 +368,7 @@ class Tpv
     {
         //Convert Array to Json
         $json = $this->arrayToJson($this->_setParameters);
+        var_dump($json);
 
         //Return Json to Base64
         return $this->encodeBase64($json);
@@ -441,8 +458,9 @@ class Tpv
 
     /**
      * @param string $environment
-     * @deprecated Use `setEnvironment`
      * @return $this
+     * @throws Exception if invalid environment is set
+     * @deprecated Use `setEnvironment`
      */
     public function setEnviroment($environment = 'test')
     {
